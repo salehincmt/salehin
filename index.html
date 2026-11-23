@@ -212,6 +212,18 @@ footer{color:#6a817b}
 @media(max-width:720px){body{padding:12px}header{padding:19px 20px;border-radius:18px}.card{padding:15px;border-radius:17px}.denom{padding:11px 12px;border-radius:13px}.total{padding:18px;border-radius:18px}}
 @media(min-width:1000px){#denoms{gap:14px}.card{padding:24px}.total{padding:28px 32px}}
 
+
+/* Compact developer profile */
+.developer-mini{margin:12px auto 4px;max-width:560px;padding:10px 12px;border:1px solid #d9e7e4;border-radius:14px;background:#fff;font-size:.78rem;color:#61766f;text-align:center}
+.developer-mini .dev-label{font-size:.65rem;letter-spacing:1.3px;font-weight:800;color:#0f766e;margin-bottom:5px}
+.developer-mini .dev-contact{display:flex;justify-content:center;flex-wrap:wrap;gap:7px 12px;align-items:center}
+.developer-mini a{color:#166b57;text-decoration:none;font-weight:650}
+.developer-mini a:hover{text-decoration:underline}
+.developer-mini .dev-icon{font-size:.95rem;vertical-align:middle;margin-right:3px}
+.dark .developer-mini{background:#162526;border-color:#2b4141;color:#b4c5be}
+.dark .developer-mini .dev-label{color:#69d4b7}
+.dark .developer-mini a{color:#8be0c3}
+@media print{.developer-mini{display:none!important}}
 </style></head><body data-version="SMART-3.0">
 <header><h1>MM Enterprise</h1><p>Cash Count Management System</p><div class="connection-status" aria-live="polite"><span id="connectionDot" class="status-dot"></span><strong id="connectionLabel">Checking connection…</strong><span id="connectionHint">Local data saved on this device</span></div></header>
 <section class="dashboard" aria-label="Cash count dashboard">
@@ -230,6 +242,17 @@ footer{color:#6a817b}
 <section class="card" id="cash-summary"><h2>📊 নোটভিত্তিক সারাংশ</h2><div class="summarybox" id="denomSummary"></div></section>
 
 <div id="printSlip" aria-hidden="true"></div><section class="card" id="cash-history"><h2>🧾 গণনার হিস্টোরি</h2><input id="historySearch" type="search" placeholder="হিস্টোরি খুঁজুন (নাম / টাকার পরিমাণ)" oninput="renderHistory()" style="width:100%;padding:11px;border:1px solid #cddbd0;border-radius:10px;font:inherit;margin:0 0 10px"><div id="historyTotalSum" class="history-sum" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px"><div class="sum-tile"><small>মোট হিসাব</small><strong id="historyCount">০</strong></div><div class="sum-tile"><small>History TOTAL SUM</small><strong id="historyGrandSum">৳ ০</strong></div></div><div class="savednote" id="autosaveStatus"></div><div id="history"></div></section><input id="restoreFile" type="file" accept="application/json" hidden onchange="restoreBackup(event)"><footer>SMART 3.0 · ডেটা এই ডিভাইসের ব্রাউজারে সেভ থাকে · PDF করতে Print থেকে Save as PDF বেছে নিন</footer>
+<div class="developer-mini" aria-label="Developer contact information">
+  <div class="dev-label">DEVELOPER</div>
+  <div class="dev-contact">
+    <a href="tel:01711778215">📞 01711778215</a> · <a href="tel:01719047779">01719047779</a>
+    <a href="mailto:salehin367@gmail.com">✉️ salehin367@gmail.com</a>
+    <a href="https://www.facebook.com/admsalehin11" target="_blank" rel="noopener noreferrer"><span class="dev-icon">ⓕ</span>Facebook</a>
+    <a href="https://wa.me/8801719047779" target="_blank" rel="noopener noreferrer"><span class="dev-icon">🟢</span>WhatsApp 1</a>
+    <a href="weixin://" target="_blank" rel="noopener noreferrer"><span class="dev-icon">🟩</span>WeChat ID: salehin367</a>
+    </div>
+</div>
+
 
 
 <script>
