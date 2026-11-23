@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#166534"><title>MM Enterprise · Cash Count Management System</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Noto Sans Bengali',sans-serif;color:#14221b;background:#f2f7f3}*{box-sizing:border-box}body{margin:0 auto;padding:14px;max-width:560px}header{background:linear-gradient(135deg,#166534,#15803d);color:white;border-radius:18px;padding:20px;margin-bottom:14px}h1{margin:0 0 5px;font-size:1.45rem}header p{margin:0;opacity:.9}.total{background:#fff;border:1px solid #dce8de;border-radius:18px;padding:18px;text-align:center;margin:12px 0;box-shadow:0 3px 12px #0b3b1c0b}.total small{color:#587064}.total strong{display:block;font-size:2rem;color:#166534;margin-top:5px}.compare label{display:block;font-weight:700;margin:8px 0}.compare input{width:100%;padding:12px;border:1px solid #cddbd0;border-radius:10px;font:inherit}.signal{margin-top:12px;padding:14px;border-radius:12px;text-align:center;font-weight:900;font-size:1.3rem;background:#edf2ef;color:#405349}.signal.more{background:#fee2e2;color:#991b1b}.signal.less{background:#ffedd5;color:#9a3412}.signal.match{background:#dcfce7;color:#166534}.difference{margin-top:7px;text-align:center;font-weight:700}.denom{display:grid;grid-template-columns:80px 1fr 1fr;gap:10px;align-items:center;background:white;border:1px solid #e0e9e1;padding:11px;border-radius:13px;margin:8px 0}.money{font-weight:800;color:#166534;font-size:1.1rem}.denom input{width:100%;padding:10px;border:1px solid #cddbd0;border-radius:9px;font:inherit;text-align:center}.subtotal{text-align:right;font-weight:700;color:#334c3c}.btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.btns button{border:0;border-radius:11px;padding:12px 15px;font:inherit;font-weight:700;cursor:pointer}.primary{background:#166534;color:#fff}.soft{background:#e1ede4;color:#164b2a}.warn{background:#a32626;color:white}.card{background:white;border:1px solid #e0e9e1;border-radius:16px;padding:15px;margin:14px 0}.card h2{font-size:1.1rem;margin:0 0 10px}.hist{border-top:1px solid #e6ece7;padding:10px 0}.hist strong{display:block}.muted{color:#687c6e;font-size:.88rem}.empty{text-align:center;padding:15px;color:#718176}footer{text-align:center;color:#718176;font-size:.8rem;padding:10px}@media(max-width:380px){.denom{grid-template-columns:65px 1fr 1fr;gap:6px;padding:8px}.money{font-size:1rem}}
+.qtyctrl{display:flex;gap:5px;align-items:center}.qtyctrl button{border:0;background:#e1ede4;color:#164b2a;border-radius:9px;padding:9px 12px;font-weight:800;font-size:1rem}.qtyctrl input{min-width:0}.dark{background:#101915;color:#e5eee8}.dark header{background:linear-gradient(135deg,#064e3b,#166534)}.dark .total,.dark .denom,.dark .card,.dark footer{background:#1c2922;color:#e5eee8;border-color:#34483a}.dark input{background:#111d16;color:#e5eee8;border-color:#415648}.dark .money{color:#86efac}.dark .subtotal{color:#d1fae5}.dark .muted{color:#a6b8ac}.dark .soft{background:#30463a;color:#d9f4e2}.dark .signal{background:#29372f;color:#e5eee8}.dark .signal.more{background:#512626;color:#fecaca}.dark .signal.less{background:#50351d;color:#fed7aa}.dark .signal.match{background:#173d2b;color:#bbf7d0}.dark .difference{color:#dbe7dd} @media print{body{max-width:none;background:#fff;color:#000}.btns,.compare input,.qtyctrl button,.hist button{display:none!important}.card,.total,.denom{break-inside:avoid;box-shadow:none}}
+
+.proextras{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}.proextras button{border:1px solid #cddbd0;background:#e1ede4;color:#164b2a;border-radius:10px;padding:10px;font:inherit;font-weight:700}.progresswrap{margin-top:10px;background:#e5eee7;border-radius:999px;height:12px;overflow:hidden}.progressbar{height:100%;width:0;background:#16a34a;transition:width .25s}.prostat{font-size:.88rem;color:#587064;margin-top:6px}.summarybox{font-size:.9rem;line-height:1.7;margin-top:8px}.savednote{font-size:.8rem;color:#16803d;text-align:right;min-height:1.2em}.compact .card:not(.compare),.compact footer,.compact #history{display:none}.compact .denom{padding:7px;margin:5px 0}.compact header{padding:12px}.compact .total{padding:12px}.dark .proextras button{background:#30463a;color:#d9f4e2;border-color:#415648}.dark .progresswrap{background:#30463a}
+
+/* Laptop Web Edition UI refresh */
+body{max-width:1180px;padding:24px 28px;background:#f4f7f5}
+header{padding:26px 30px;border-radius:20px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+header p{font-size:.98rem}
+.total{padding:24px;box-shadow:0 8px 24px #0b3b1c0a}
+.total strong{font-size:2.5rem}
+.card{padding:20px;border-radius:18px}
+#denoms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.denom{margin:0;grid-template-columns:100px 1fr 1fr;gap:12px;padding:14px 16px;box-shadow:0 2px 7px #0b3b1c08}
+.qtyctrl{gap:7px}
+.qtyctrl button{cursor:pointer;min-width:36px;transition:transform .12s ease,background .12s ease}
+.qtyctrl button:hover{background:#c8e3cf;transform:translateY(-1px)}
+.qtyctrl input{font-size:1.05rem;min-width:0}
+.subtotal{font-size:1rem}
+.btns{gap:10px}
+.btns button{transition:transform .12s ease,opacity .12s ease}
+.btns button:hover{transform:translateY(-1px);opacity:.92}
+#history .hist{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+#history .hist strong{flex:1 1 260px}
+@media(min-width:900px){body{padding-top:28px}header h1{font-size:1.8rem}.compare{max-width:100%}.total,.compare{margin:16px 0}.card h2{font-size:1.2rem}}
+@media(max-width:720px){body{padding:12px;max-width:560px}header{display:block;padding:18px}#denoms{grid-template-columns:1fr}.denom{grid-template-columns:75px 1fr 1fr;gap:8px;padding:10px}.total strong{font-size:2rem}}
+@media print{body{max-width:none;padding:0}#denoms{grid-template-columns:repeat(2,1fr)}header{display:block}}
+
+/* Professional Laptop Dashboard refresh */
+:root{--green:#166534;--green2:#15803d;--ink:#14221b;--muted:#66786c;--line:#dce8de;--panel:#fff;--bg:#f3f7f4}
+body{max-width:1320px;padding:28px 34px;background:radial-gradient(circle at top left,#e6f2e8 0,transparent 36%),var(--bg);color:var(--ink)}
+header{padding:26px 32px;border-radius:22px;box-shadow:0 10px 28px #0b3b1c12;min-height:108px}
+header h1{font-size:1.85rem;letter-spacing:.2px}header p{font-size:.95rem}
+.total{position:relative;overflow:hidden;border-radius:20px;padding:26px 28px;box-shadow:0 8px 28px #0b3b1c0b}
+.total strong{font-size:2.65rem;letter-spacing:.2px}.total small{font-size:.9rem;font-weight:700;letter-spacing:.2px}
+.compare{border-radius:20px;box-shadow:0 8px 24px #0b3b1c08}.compare h2{display:flex;align-items:center;gap:8px}
+.proextras button{border-radius:12px;transition:.16s ease}.proextras button:hover{transform:translateY(-1px);box-shadow:0 4px 12px #16653415}
+#denoms{margin:16px 0;gap:12px}.denom{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px 18px;box-shadow:0 3px 12px #0b3b1c07;transition:border-color .15s,box-shadow .15s}
+.denom:focus-within{border-color:#65a879;box-shadow:0 0 0 3px #16a34a15}
+.money{font-size:1.12rem;white-space:nowrap}.denom input{border-radius:10px;background:#f9fcfa;padding:12px;font-weight:700;outline:none;transition:.15s}
+.denom input:focus,.compare input:focus{border-color:#16a34a;box-shadow:0 0 0 3px #16a34a18;outline:none}
+.subtotal{font-variant-numeric:tabular-nums;font-size:1rem}
+.btns{margin:16px 0}.btns button{border-radius:12px;padding:12px 17px}
+.card{border-radius:20px;box-shadow:0 5px 18px #0b3b1c06}.card h2{font-weight:800}
+#history .hist{background:#fbfdfb;border-radius:12px;margin:8px 0;padding:12px;border-top:0}
+.history-sum .sum-tile{background:#f0f7f1;border:1px solid #d6e6d9;border-radius:12px;padding:12px}.history-sum small{display:block;color:#587064;font-size:.82rem}.history-sum strong{display:block;color:#166534;font-size:1.35rem;margin-top:4px}.dark .history-sum .sum-tile{background:#1c2922;border-color:#34483a}.dark .history-sum small{color:#a6b8ac}.dark .history-sum strong{color:#86efac}
+footer{margin-top:18px}
+.dark{--bg:#101915;--panel:#1c2922;--line:#34483a;--ink:#e5eee8;background:radial-gradient(circle at top left,#173b2a 0,transparent 35%),#101915}
+.dark .denom{background:var(--panel);border-color:var(--line)}.dark .denom input{background:#111d16}.dark .total{border-color:var(--line)}
+@media(max-width:720px){body{padding:12px}header{padding:18px}header h1{font-size:1.45rem}.total{padding:18px}.total strong{font-size:2rem}.denom{padding:11px}}
+
+/* Improved print / PDF report */
+@media print {
+  @page { size: A4 portrait; margin: 14mm 12mm; }
+  html, body { background:#fff !important; color:#111 !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; font-size:11pt !important; }
+  body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  header { display:block !important; background:#fff !important; color:#111 !important; border:2px solid #166534 !important; border-radius:8px !important; box-shadow:none !important; padding:12mm 8mm 6mm !important; margin:0 0 6mm !important; text-align:center !important; min-height:0 !important; }
+  header h1 { font-size:20pt !important; margin:0 0 3mm !important; color:#166534 !important; }
+  header p { font-size:10pt !important; opacity:1 !important; color:#333 !important; }
+  .btns, .proextras, .compare input, #recentTargets, .progresswrap, .prostat, .savednote, #history, footer, .qtyctrl button, #restoreFile { display:none !important; }
+  .total, .card, .denom { background:#fff !important; color:#111 !important; border:1px solid #cbd5ce !important; box-shadow:none !important; border-radius:6px !important; }
+  .total { margin:0 0 5mm !important; padding:6mm !important; page-break-inside:avoid !important; }
+  .total small { color:#333 !important; font-size:10pt !important; }
+  .total strong { color:#166534 !important; font-size:25pt !important; margin:2mm 0 !important; }
+  #amountWords { color:#222 !important; font-size:10pt !important; }
+  #totalPieces { color:#222 !important; }
+  .compare { margin:0 0 5mm !important; padding:5mm !important; page-break-inside:avoid !important; }
+  .compare h2, .card h2 { color:#166534 !important; font-size:12pt !important; margin-bottom:3mm !important; }
+  .signal { background:#fff !important; border:1px solid #777 !important; color:#111 !important; padding:3mm !important; font-size:13pt !important; margin-top:3mm !important; }
+  .signal.more, .signal.less, .signal.match { background:#fff !important; color:#111 !important; }
+  .difference { color:#111 !important; font-size:10pt !important; }
+  #denoms { display:grid !important; grid-template-columns:1fr 1fr !important; gap:3mm !important; margin:0 !important; }
+  .denom { grid-template-columns:26mm 1fr 1fr !important; gap:3mm !important; padding:3mm !important; margin:0 !important; page-break-inside:avoid !important; }
+  .money { color:#166534 !important; font-size:11pt !important; }
+  .denom input { border:0 !important; background:transparent !important; color:#111 !important; font-size:11pt !important; padding:0 !important; }
+  .subtotal { color:#111 !important; font-size:10pt !important; }
+  .card { margin:5mm 0 0 !important; padding:5mm !important; page-break-inside:avoid !important; }
+  #denomSummary { color:#111 !important; line-height:1.6 !important; }
+  .dark { background:#fff !important; color:#111 !important; }
+  .dark header, .dark .total, .dark .card, .dark .denom, .dark .signal { background:#fff !important; color:#111 !important; border-color:#cbd5ce !important; }
+}
+
+
+.print-details .print-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.print-details label{display:block;font-weight:700;font-size:.9rem}
+.print-details input{width:100%;margin-top:6px;padding:10px;border:1px solid #cddbd0;border-radius:9px;font:inherit;background:#fff;color:#14221b}
+#printSlip{display:none}
+#printSlip .slip-title{text-align:center;margin-bottom:16px}
+#printSlip h1{font-size:22px;color:#166534;margin:0 0 5px}
+#printSlip .slip-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+#printSlip table{width:100%;border-collapse:collapse;margin:12px 0}
+#printSlip th,#printSlip td{border:1px solid #b9c8bd;padding:8px;text-align:left}
+#printSlip th{background:#edf5ef;color:#166534}
+#printSlip .slip-total{font-size:20px;font-weight:800;text-align:right;margin:12px 0;color:#166534}
+#printSlip .slip-signatures{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:42px}
+#printSlip .slip-signatures div{border-top:1px solid #222;padding-top:8px;text-align:center}
+@media print{
+  @page{size:A4 portrait;margin:14mm}
+  body>*{display:none!important}
+  #printSlip{display:block!important;font-family:system-ui,'Noto Sans Bengali',sans-serif;color:#111!important;background:#fff!important;font-size:11pt}
+  #printSlip .slip-title{border:2px solid #166534;border-radius:8px;padding:12mm 5mm 6mm;margin-bottom:7mm}
+  #printSlip h1{font-size:20pt;color:#166534!important}
+  #printSlip .slip-meta{grid-template-columns:1fr 1fr;gap:3mm;margin:5mm 0}
+  #printSlip table{font-size:10.5pt}
+  #printSlip th{background:#edf5ef!important;print-color-adjust:exact}
+  #printSlip .slip-total{font-size:18pt;margin:6mm 0}
+  #printSlip .slip-signatures{margin-top:22mm;gap:25mm}
+  #printSlip .slip-signatures div{padding-top:3mm}
+}
+
+.smart-shortcuts{background:linear-gradient(135deg,#f8fcf9,#edf7ef);border-color:#d6e6d9}
+.shortcut-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;font-size:.88rem}
+.shortcut-grid span{background:#fff;border:1px solid #dce8de;border-radius:10px;padding:9px;text-align:center}
+kbd{display:inline-block;background:#e8eee9;border:1px solid #c8d5ca;border-radius:5px;padding:2px 6px;font:600 .85em inherit;color:#1b3926}
+.dark .smart-shortcuts{background:#1b2b22;border-color:#34483a}.dark .shortcut-grid span{background:#111d16;border-color:#34483a}.dark kbd{background:#30463a;border-color:#415648;color:#e5eee8}
+@media(max-width:800px){.shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.connection-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:9px 11px;border-radius:12px;background:#ffffff20;border:1px solid #ffffff30;font-size:.88rem}.status-dot{width:10px;height:10px;border-radius:50%;background:#facc15;box-shadow:0 0 0 3px #facc1525}.status-dot.online{background:#4ade80;box-shadow:0 0 0 3px #4ade8025}.status-dot.offline{background:#fb923c;box-shadow:0 0 0 3px #fb923c25}#connectionHint{opacity:.85;font-size:.8rem;margin-left:auto}@media print{.connection-status{display:none}}
+
+/* FRIENDLY UI refresh */
+:root{--green:#19764a;--green2:#25a36b;--ink:#20352a;--muted:#728278;--line:#dfeae3;--panel:#ffffff;--bg:#f5faf7}
+body{background:linear-gradient(180deg,#f1f9f4 0,#f7faf8 42%,#f5f8f6 100%);color:#20352a}
+header{background:linear-gradient(135deg,#23845a,#31a875);border-radius:24px;padding:28px 32px;box-shadow:0 10px 30px #15744715}
+header h1{font-size:clamp(1.4rem,2.4vw,2rem);letter-spacing:.1px}
+header p{line-height:1.6}
+.total{background:linear-gradient(145deg,#fff,#f5fbf7);border:1px solid #e1eee5;border-radius:24px;padding:26px;box-shadow:0 8px 26px #18764a0b}
+.total strong{color:#198052}
+.card,.compare{background:#fff;border:1px solid #e1eee5;border-radius:22px;box-shadow:0 6px 24px #174c2a08;padding:22px}
+.card h2,.compare h2{color:#26764f}
+.denom{background:#fff;border:1px solid #e3eee6;border-radius:18px;padding:16px;box-shadow:0 3px 14px #174c2a06}
+.money{color:#218253;font-size:1.15rem}
+.denom input,.compare input{border:1.5px solid #d9e7de;background:#fbfefc;border-radius:12px;padding:13px;font-size:1rem}
+.denom input:focus,.compare input:focus{border-color:#4cb17a;box-shadow:0 0 0 4px #4cb17a18}
+.btns button,.proextras button{border-radius:14px;padding:13px 18px;min-height:46px;font-weight:750}
+.primary{background:linear-gradient(135deg,#23845a,#2eaa72);box-shadow:0 5px 12px #2182531a}
+.soft,.proextras button{background:#eaf6ee;color:#236343;border-color:#d6e9dc}
+.warn{background:#e35b5b;border-radius:14px}
+.signal{border-radius:16px;padding:16px;font-size:1.15rem}
+#history .hist{background:#f8fcf9;border:1px solid #e4eee7;border-radius:16px;padding:14px;margin:8px 0}
+footer{color:#7a8c80}
+@media(max-width:720px){body{padding:12px}header{padding:20px;border-radius:20px} .card,.compare{padding:16px} .total{padding:20px} .btns button,.proextras button{flex:1 1 auto} .denom{border-radius:15px}}
+.dark{--bg:#111c16;--panel:#1b2a21;--line:#34483a;--ink:#e7f1e9;--muted:#adbbb1;background:linear-gradient(180deg,#12251a,#101915 50%,#101915);color:#e7f1e9}
+.dark header{background:linear-gradient(135deg,#155e3b,#218253)}
+.dark .total,.dark .card,.dark .compare,.dark .denom{background:#1b2a21;border-color:#34483a;color:#e7f1e9}
+.dark .denom input,.dark .compare input{background:#111d16;border-color:#405646;color:#e7f1e9}
+.dark .soft,.dark .proextras button{background:#2b4434;color:#d9f4e2;border-color:#405646}
+.dark #history .hist{background:#17241c;border-color:#34483a}
+
+
+/* Two-column Customer / Amount Matching layout */
+.customer-match-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch;margin:14px 0}
+.customer-match-columns>.card{margin:0;min-width:0}
+.customer-match-columns .compare{max-width:none}
+@media(max-width:720px){.customer-match-columns{grid-template-columns:1fr;gap:10px}}
+@media print{.customer-match-columns{grid-template-columns:1fr 1fr;gap:4mm;margin:0 0 5mm}.customer-match-columns>.card{margin:0}}
+
+
+/* Modern dashboard redesign 2026 */
+:root{--dash-accent:#16a34a;--dash-soft:#e8f5ec;--dash-border:#d9e8dd}
+body{max-width:1440px;padding:28px 36px;background:linear-gradient(180deg,#eaf4ed 0,#f5f8f6 260px,#f5f8f6 100%)}
+header{position:relative;overflow:hidden;align-items:flex-start;flex-direction:column;gap:10px;padding:30px 34px;background:linear-gradient(120deg,#064e3b,#15803d 60%,#22a05a);border-radius:26px}
+header:after{content:"";position:absolute;right:-60px;top:-90px;width:260px;height:260px;border:1px solid #ffffff25;border-radius:50%;box-shadow:0 0 0 28px #ffffff09,0 0 0 58px #ffffff08;pointer-events:none}
+header h1{font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:.3px}header p{opacity:.88}
+.connection-status{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:#ffffff17;border:1px solid #ffffff22;border-radius:999px;padding:8px 13px;z-index:1}.connection-status strong{font-size:.82rem;letter-spacing:.5px}.connection-status span:last-child{font-size:.78rem;opacity:.8}
+.dashboard{display:grid;grid-template-columns:1.4fr repeat(2,1fr);gap:14px;margin:16px 0}
+.dash-tile{background:#fff;border:1px solid #dce9df;border-radius:20px;padding:18px 20px;box-shadow:0 8px 24px #143d2208;min-height:112px;display:flex;flex-direction:column;justify-content:center}
+.dash-tile.primary-dash{background:linear-gradient(135deg,#ecf8f0,#fff);border-color:#c8e5d0}.dash-label{font-size:.82rem;color:#66786c;font-weight:700}.dash-value{font-size:1.6rem;font-weight:900;color:#166534;margin-top:7px;line-height:1.2}.dash-caption{font-size:.8rem;color:#74877b;margin-top:5px}
+.dashboard-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.dashboard-nav a{display:inline-flex;text-decoration:none;color:#1a5530;background:#e4f1e7;border:1px solid #d1e5d7;padding:9px 14px;border-radius:999px;font-weight:750;font-size:.85rem}.dashboard-nav a:hover{background:#d5eadb}
+.customer-match-columns>.card{margin:0}.customer-match-columns{gap:14px;margin-bottom:14px}.card{border:1px solid #dce9df;box-shadow:0 7px 20px #143d2206;border-radius:20px}.card h2{display:flex;align-items:center;gap:8px}.compare input{width:100%;padding:13px 14px;border:1px solid #cddbd0;border-radius:12px;font:inherit;background:#fbfdfb}
+#denoms{gap:12px}.denom{border-radius:17px;box-shadow:0 5px 16px #143d2205;padding:15px 17px}.denom input{background:#f8fbf9;border:1px solid #dce8df}.total{border-radius:24px;border:1px solid #cfe4d4;background:linear-gradient(135deg,#ffffff,#f2faf4);padding:28px;box-shadow:0 10px 28px #143d2209}.total strong{font-size:clamp(2rem,4vw,3rem);color:#15803d}.total small{letter-spacing:1.2px;font-weight:800;color:#5b7463}
+.btns{padding:4px 0}.btns button{border-radius:13px;padding:12px 17px}.primary{background:linear-gradient(135deg,#166534,#16a34a)}
+.history-sum .sum-tile{border-radius:15px}.hist{border-radius:15px!important}
+.dark body,.dark{background:#101915}.dark header{background:linear-gradient(120deg,#064e3b,#166534 60%,#16844a)}.dark .dash-tile{background:#1c2922;border-color:#34483a;color:#e5eee8}.dark .dash-label,.dark .dash-caption{color:#a6b8ac}.dark .dash-value{color:#86efac}.dark .dash-tile.primary-dash{background:linear-gradient(135deg,#183426,#1c2922)}.dark .dashboard-nav a{background:#233c2c;border-color:#34483a;color:#d9f4e2}.dark .total{background:linear-gradient(135deg,#1c2922,#20372a);border-color:#34483a}.dark #history .hist{background:#17241c;border-color:#34483a}
+@media(max-width:900px){.dashboard{grid-template-columns:1fr 1fr}.dash-tile.primary-dash{grid-column:1/-1}}
+@media(max-width:700px){body{padding:12px;background:#f3f7f4}header{padding:20px;border-radius:20px}.dashboard{grid-template-columns:1fr 1fr;gap:9px}.dash-tile{min-height:94px;padding:13px}.dash-value{font-size:1.35rem}.dashboard-nav{margin-bottom:12px}.dashboard-nav a{padding:8px 11px;font-size:.8rem}.customer-match-columns{gap:10px}.total{padding:19px}}
+@media print{.dashboard,.dashboard-nav{display:none!important}header{background:#fff!important;color:#111!important}}
+
+
+/* Hide numeric input spinner arrows for a cleaner cash-count UI */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+#cash-entry h2{margin:0 0 14px;color:#26764f}#cash-entry #denoms{margin:0}.dark #cash-entry h2{color:#86efac}
+
+/* MM Enterprise Modern Design Refresh */
+:root{--green:#0f766e;--green2:#14b8a6;--ink:#102a27;--muted:#647b76;--line:#d9e7e4;--panel:#ffffff;--bg:#f4f8f8}
+body{max-width:1440px;padding:28px 36px;background:linear-gradient(145deg,#eaf4f2 0%,#f7fafb 46%,#eef4f7 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,'Noto Sans Bengali',sans-serif}
+header{background:linear-gradient(120deg,#0b3d3a,#0f766e 62%,#15988b);border-radius:24px;padding:28px 34px;box-shadow:0 14px 36px #0b3d3a20;border:1px solid #ffffff24}
+header h1{font-weight:850;letter-spacing:.25px;font-size:clamp(1.45rem,2.3vw,2rem)}header p{font-weight:500;opacity:.92}
+.total{border:1px solid #d8e8e5;border-radius:22px;background:linear-gradient(180deg,#fff,#fbfefd);box-shadow:0 8px 26px #153f3910;padding:26px 30px}
+.total strong{color:#0f766e;font-variant-numeric:tabular-nums;font-size:clamp(2rem,4vw,2.8rem)}
+.card{background:#ffffff;border:1px solid #dce9e6;border-radius:20px;padding:22px;box-shadow:0 6px 20px #163d3810;margin:16px 0}
+.card h2{color:#163d38;font-weight:850;letter-spacing:.1px}
+.compare input,.denom input,.print-details input{border:1px solid #cbded9;background:#f9fcfb;border-radius:12px;padding:12px 14px;transition:all .18s ease}
+.compare input:focus,.denom input:focus,.print-details input:focus{border-color:#0f9b8d;box-shadow:0 0 0 3px #14b8a618;outline:none;background:white}
+#denoms{gap:12px;margin:16px 0}
+.denom{background:linear-gradient(180deg,#fff,#fcfefe);border:1px solid #dbe8e5;border-radius:16px;padding:15px 16px;box-shadow:0 3px 12px #163d3809;transition:transform .16s ease,box-shadow .16s ease,border-color .16s}
+.denom:hover{transform:translateY(-1px);border-color:#b8d8d1;box-shadow:0 7px 18px #163d3810}
+.money{color:#0f766e;font-weight:850}.subtotal{font-variant-numeric:tabular-nums;color:#284a44}
+.btns{gap:9px}.btns button,.proextras button{border-radius:12px;padding:12px 16px;font-weight:750;transition:all .16s ease}.primary{background:linear-gradient(120deg,#0f766e,#14998c);box-shadow:0 4px 12px #0f766e22}.soft{background:#e7f4f1;color:#135e55;border:1px solid #d3e9e3}.warn{background:#b42336}.btns button:hover,.proextras button:hover{transform:translateY(-1px);filter:brightness(.98)}
+.proextras{gap:9px}.proextras button{background:#eaf4f2;border-color:#d4e7e2;color:#165c53}
+.signal{border-radius:14px;font-weight:850}.progresswrap{height:10px;background:#e5efed}.progressbar{background:linear-gradient(90deg,#0f766e,#21b5a3)}
+#history .hist{background:#f9fcfb;border:1px solid #e2ece9;border-radius:14px;padding:14px;margin:9px 0;gap:9px}
+.history-sum .sum-tile{border-radius:14px;background:#eef7f5;border-color:#d6e8e3;padding:14px}
+footer{color:#6a817b}
+.dark{--bg:#0b1516;--panel:#162526;--line:#2b4141;--ink:#e5f2ef;background:radial-gradient(circle at top left,#153a35 0,transparent 38%),#0b1516;color:#e5f2ef}
+.dark header{background:linear-gradient(120deg,#092c2a,#0f766e,#117e74)}.dark .card,.dark .total,.dark .denom{background:#162526;border-color:#2b4141;box-shadow:0 6px 22px #0002}.dark .card h2{color:#d8eee9}.dark .denom input,.dark .compare input{background:#0e1c1d;border-color:#38504f;color:#e5f2ef}.dark .money{color:#70d8c7}.dark .subtotal{color:#c4ddd7}.dark .soft,.dark .proextras button{background:#203b38;border-color:#34514d;color:#d8eee9}.dark #history .hist{background:#142323;border-color:#2b4141}.dark .history-sum .sum-tile{background:#203b38;border-color:#34514d}
+@media(max-width:720px){body{padding:12px}header{padding:19px 20px;border-radius:18px}.card{padding:15px;border-radius:17px}.denom{padding:11px 12px;border-radius:13px}.total{padding:18px;border-radius:18px}}
+@media(min-width:1000px){#denoms{gap:14px}.card{padding:24px}.total{padding:28px 32px}}
+
+</style></head><body data-version="SMART-3.0">
+<header><h1>MM Enterprise</h1><p>Cash Count Management System</p><div class="connection-status" aria-live="polite"><span id="connectionDot" class="status-dot"></span><strong id="connectionLabel">Checking connection…</strong><span id="connectionHint">Local data saved on this device</span></div></header>
+<section class="dashboard" aria-label="Cash count dashboard">
+ <div class="dash-tile primary-dash"><span class="dash-label">💵 CURRENT CASH COUNT</span><strong class="dash-value" id="dashCurrent">৳ 0</strong><span class="dash-caption">Live counted total</span></div>
+ <div class="dash-tile"><span class="dash-label">🧾 SAVED RECORDS</span><strong class="dash-value" id="dashSaved">০</strong><span class="dash-caption">History entries</span></div>
+ <div class="dash-tile"><span class="dash-label">📚 HISTORY TOTAL</span><strong class="dash-value" id="dashHistorySum">৳ ০</strong><span class="dash-caption">All saved counts combined</span></div>
+</section>
+<nav class="dashboard-nav"><a href="#cash-entry">✍️ Cash Entry</a><a href="#cash-summary">📊 Summary</a><a href="#cash-history">🧾 History</a></nav>
+
+<div class="customer-match-columns"><section class="card"><h2>👤 Customer Name</h2><label for="customerName">কাস্টমারের নাম</label><input id="customerName" type="text" placeholder="কাস্টমারের নাম লিখুন" style="width:100%;padding:12px;border:1px solid #cddbd0;border-radius:10px;font:inherit" oninput="saveDraft()"></section>
+<section class="card compare"><h2>🎯 টাকার পরিমাণ মিলিয়ে দেখুন</h2><label for="targetAmount">Customer-এর দেওয়ার কথা ৳</label><input id="targetAmount" type="number" min="0" step="1" inputmode="numeric" placeholder="যেমন: ৫০,০০০" oninput="updateTotal()"><div class="progresswrap"><div class="progressbar" id="targetProgress"></div></div><div class="prostat" id="targetStats"></div><div class="signal" id="signal" role="status" aria-live="polite">টার্গেট টাকার পরিমাণ লিখুন</div><div class="difference" id="difference"></div></section></div>
+<section class="card cash-entry-card" id="cash-entry"><h2>💵 CASH ENTRY — নোট গণনা</h2><div id="denoms"></div></section>
+
+<div class="total"><small>CASH COUNTED</small><strong id="grandTotal">৳ ০</strong><div id="amountWords" style="margin-top:8px;font-size:.9rem;line-height:1.55;color:#334c3c">বাংলা: শূন্য টাকা<br>English: Zero Taka</div></div>
+<div class="btns"><button class="soft" id="langToggle" onclick="toggleLanguage()">🌐 English</button><button class="primary" onclick="saveCount()">💾 হিসাব সেভ</button><button class="soft" onclick="printReport()">📄 PDF / Print</button><button class="soft" onclick="toggleTheme()">🌙 Dark/Light</button><button class="soft" onclick="toggleCompact()">▤ Compact Mode</button><button class="soft" onclick="toggleWake()">☀ Screen Awake</button><button class="soft" onclick="clearInputs()">↻ সব ক্লিয়ার</button><button class="soft" onclick="downloadBackup()">⬇ ব্যাকআপ</button><button class="soft" onclick="document.getElementById('restoreFile').click()">⬆ Restore</button><button class="warn" onclick="clearHistory()">হিস্টোরি মুছুন</button></div>
+<section class="card" id="cash-summary"><h2>📊 নোটভিত্তিক সারাংশ</h2><div class="summarybox" id="denomSummary"></div></section>
+
+<div id="printSlip" aria-hidden="true"></div><section class="card" id="cash-history"><h2>🧾 গণনার হিস্টোরি</h2><input id="historySearch" type="search" placeholder="হিস্টোরি খুঁজুন (নাম / টাকার পরিমাণ)" oninput="renderHistory()" style="width:100%;padding:11px;border:1px solid #cddbd0;border-radius:10px;font:inherit;margin:0 0 10px"><div id="historyTotalSum" class="history-sum" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px"><div class="sum-tile"><small>মোট হিসাব</small><strong id="historyCount">০</strong></div><div class="sum-tile"><small>History TOTAL SUM</small><strong id="historyGrandSum">৳ ০</strong></div></div><div class="savednote" id="autosaveStatus"></div><div id="history"></div></section><input id="restoreFile" type="file" accept="application/json" hidden onchange="restoreBackup(event)"><footer>SMART 3.0 · ডেটা এই ডিভাইসের ব্রাউজারে সেভ থাকে · PDF করতে Print থেকে Save as PDF বেছে নিন</footer>
+
+
+<script>
+const denominations=[1000,500,200,100,50,20,10,5,2,1];const storageKey='cash_counting_history_v1';const digits='০১২৩৪৫৬৭৮৯',enDigits='0123456789';const fmt=n=>Number(n||0).toLocaleString('en-BD');const bn=n=>String(n).replace(/[0-9]/g,d=>(uiLang==='en'?enDigits:digits)[Number(d)]);
+const enOnes=['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'],enTeens=['Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'],enTens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];const bnOnes=['শূন্য','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],bnTeens=['দশ','এগারো','বারো','তেরো','চৌদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],bnTens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'];function words999(n,lang){const ones=lang==='en'?enOnes:bnOnes,teens=lang==='en'?enTeens:bnTeens,tens=lang==='en'?enTens:bnTens;let out=[];if(n>=100){out.push(ones[Math.floor(n/100)]+(lang==='en'?' Hundred':' শত'));n%=100}if(n>=20){out.push(tens[Math.floor(n/10)]);n%=10}if(n>=10){out.push(teens[n-10]);n=0}if(n>0||out.length===0)out.push(ones[n]);return out.join(' ')}function amountWords(n,lang){n=Math.floor(Math.max(0,Number(n)||0));if(n===0)return lang==='en'?'Zero Taka':'শূন্য টাকা';let groups=[],units=lang==='en'?['','Thousand','Lakh','Crore']:['','হাজার','লাখ','কোটি'];let i=0;while(n>0&&i<units.length){let part=n%1000;if(part){let w=words999(part,lang);groups.unshift(w+(units[i]?(lang==='en'?' '+units[i]:' '+units[i]):''))}n=Math.floor(n/1000);i++}return groups.join(' ').trim()+(lang==='en'?' Taka':' টাকা')}
+const root=document.getElementById('denoms');denominations.forEach(v=>{root.insertAdjacentHTML('beforeend',`<div class="denom"><div class="money">৳ ${fmt(v)}</div><div class="qtyctrl"><input type="number" min="0" step="1" inputmode="numeric" id="q${v}" placeholder="" oninput="updateTotal()"></div><div class="subtotal" id="s${v}">৳ ০</div></div>`)});
+function getCounts(){return denominations.map(v=>({denomination:v,count:Math.max(0,parseInt(document.getElementById('q'+v).value)||0),subtotal:v*Math.max(0,parseInt(document.getElementById('q'+v).value)||0)}))}
+let lastSignalWasMatch=true;
+function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('cash_counting_theme',document.body.classList.contains('dark')?'dark':'light');}
+function printReport(){
+  const result=updateTotal(), data=result.data.filter(x=>x.count>0);
+  const company='MM Enterprise';
+  const customerName=(document.getElementById('customerName')?.value||'').trim()||'—';
+  const cashier='—';
+  const depositor='—';
+  const receiver='—';
+  const targetText=document.getElementById('targetAmount').value.trim();
+  const dateText=new Date().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'});
+  const target=targetText===''?'—':'৳ '+fmt(Number(targetText));
+  const difference=targetText===''?'—':(result.sum-Number(targetText)>=0?'অতিরিক্ত ৳ '+fmt(result.sum-Number(targetText)):'ঘাটতি ৳ '+fmt(Number(targetText)-result.sum));
+  const rows=data.map(x=>`<tr><td>৳ ${fmt(x.denomination)}</td><td>${bn(fmt(x.count))}</td><td>৳ ${fmt(x.subtotal)}</td></tr>`).join('');
+  document.getElementById('printSlip').innerHTML=`<div class="slip-title"><h1>${company}</h1><div>Cash Count Slip</div><div>${dateText}</div></div><table><thead><tr><th>নোট</th><th>সংখ্যা</th><th>মোট</th></tr></thead><tbody>${rows||'<tr><td colspan="3">কোনো নোট গণনা করা হয়নি</td></tr>'}</tbody></table><div class="slip-total">সর্বমোট নগদ: ৳ ${fmt(result.sum)}</div><div>বাংলা: ${amountWords(result.sum,'bn')}</div><div>English: ${amountWords(result.sum,'en')}</div><div style="margin-top:28px;text-align:center;font-size:9pt;color:#555">Generated by SALEHIN CASH COUNT</div>`;
+  window.print();
+}
+function playMatchSignal(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=880;gain.gain.setValueAtTime(.001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.15,ctx.currentTime+.02);gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.25);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.26);}catch{}if('vibrate' in navigator)navigator.vibrate([100,60,100]);}
+const draftKey='salehin_cash_count_draft_v1';let wakeLock=null;function setTarget(v){document.getElementById('targetAmount').value=v;updateTotal()}function toggleCompact(){document.body.classList.toggle('compact');localStorage.setItem('salehin_compact_v1',document.body.classList.contains('compact')?'1':'0')}async function toggleWake(){try{if(wakeLock){await wakeLock.release();wakeLock=null;alert('Screen Awake বন্ধ হয়েছে');return}if(!('wakeLock' in navigator)){alert('এই ব্রাউজারে Screen Awake সুবিধা নেই');return}wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>wakeLock=null);alert('গণনা চলাকালীন স্ক্রিন জাগ্রত থাকবে')}catch(e){alert('Screen Awake চালু করা যায়নি')}}function saveDraft(){try{localStorage.setItem(draftKey,JSON.stringify({target:document.getElementById('targetAmount').value,customerName:document.getElementById('customerName')?.value||'',counts:getCounts().map(x=>({d:x.denomination,c:x.count}))}));let s=document.getElementById('autosaveStatus');if(s)s.textContent='✓ অটো সেভ হয়েছে'}catch{}}function restoreDraft(){try{let d=JSON.parse(localStorage.getItem(draftKey)||'null');if(!d)return;if(d.target!==undefined)document.getElementById('targetAmount').value=d.target;if(document.getElementById('customerName'))document.getElementById('customerName').value=d.customerName||'';(d.counts||[]).forEach(x=>{let el=document.getElementById('q'+x.d);if(el)el.value=x.c})}catch{}}function renderDenomSummary(data,sum){let el=document.getElementById('denomSummary');if(!el)return;let active=data.filter(x=>x.count>0);if(!active.length){el.innerHTML='এখনো কোনো নোটের সংখ্যা দেওয়া হয়নি';return}let totalPieces=data.reduce((a,x)=>a+x.count,0);el.innerHTML=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:center;"><thead><tr><th style="padding:9px;border-bottom:1px solid var(--line,#dce8de)">নোট</th><th style="padding:9px;border-bottom:1px solid var(--line,#dce8de)">সংখ্যা</th><th style="padding:9px;border-bottom:1px solid var(--line,#dce8de)">মোট টাকা</th><th style="padding:9px;border-bottom:1px solid var(--line,#dce8de)">শতাংশ</th></tr></thead><tbody>${active.map(x=>`<tr><td style="padding:9px;border-bottom:1px solid #e7eee8">৳ ${fmt(x.denomination)}</td><td style="padding:9px;border-bottom:1px solid #e7eee8">${bn(fmt(x.count))} টি</td><td style="padding:9px;border-bottom:1px solid #e7eee8;font-weight:700">৳ ${fmt(x.subtotal)}</td><td style="padding:9px;border-bottom:1px solid #e7eee8">${sum?Math.round(x.subtotal/sum*100):0}%</td></tr>`).join('')}</tbody><tfoot><tr><td style="padding:10px;font-weight:800">সর্বমোট</td><td style="padding:10px;font-weight:800">${bn(fmt(totalPieces))} টি</td><td style="padding:10px;font-weight:900;color:#15803d">৳ ${fmt(sum)}</td><td style="padding:10px;font-weight:800">100%</td></tr></tfoot></table></div>`}
+function updateDashboard(){const totalEl=document.getElementById('dashCurrent');if(totalEl)totalEl.textContent='৳ '+fmt(getCounts().reduce((sum,x)=>sum+x.subtotal,0));const all=getHistory();const savedEl=document.getElementById('dashSaved'),historyEl=document.getElementById('dashHistorySum');if(savedEl)savedEl.textContent=bn(fmt(all.length));if(historyEl)historyEl.textContent='৳ '+fmt(all.reduce((sum,x)=>sum+(Number(x.total)||0),0));}
+function updateTotal(){const data=getCounts();let sum=data.reduce((a,x)=>a+x.subtotal,0),pieces=data.reduce((a,x)=>a+x.count,0);data.forEach(x=>document.getElementById('s'+x.denomination).textContent='৳ '+fmt(x.subtotal));document.getElementById('grandTotal').textContent='৳ '+fmt(sum);document.getElementById('amountWords').innerHTML='বাংলা: '+amountWords(sum,'bn')+'<br>English: '+amountWords(sum,'en');renderDenomSummary(data,sum);const targetNum=Math.max(0,Number(document.getElementById('targetAmount').value)||0);const pct=targetNum?Math.min(100,sum/targetNum*100):0;document.getElementById('targetProgress').style.width=pct+'%';document.getElementById('targetStats').textContent=targetNum?'টার্গেট পূরণ: '+pct.toFixed(1)+'% · বাকি: ৳ '+fmt(Math.max(0,targetNum-sum))+(sum>targetNum?' · অতিরিক্ত: ৳ '+fmt(sum-targetNum):''):'টার্গেট দিলে অগ্রগতি দেখাবে';saveDraft();updateDashboard();const targetInput=document.getElementById('targetAmount'),signal=document.getElementById('signal'),diff=document.getElementById('difference');if(targetInput.value.trim()===''){signal.className='signal';signal.textContent='টার্গেট টাকার পরিমাণ লিখুন';diff.textContent='';lastSignalWasMatch=false;}else{const target=Math.max(0,Number(targetInput.value)||0),delta=sum-target;if(delta>0){signal.className='signal more';signal.textContent='🔴 Customer বেশি দিয়েছে';diff.textContent='Customer অতিরিক্ত দিয়েছে: ৳ '+fmt(delta)+' বেশি';lastSignalWasMatch=false;}else if(delta<0){signal.className='signal less';signal.textContent='🟠 Customer কম দিয়েছে';diff.textContent='Customer কম দিয়েছে: ৳ '+fmt(-delta)+' বাকি';lastSignalWasMatch=false;}else{signal.className='signal match';signal.textContent='🟢 PAYMENT MATCHED';diff.textContent='টাকার পরিমাণ মিলেছে';if(!lastSignalWasMatch)playMatchSignal();lastSignalWasMatch=true;}}return {data,sum,pieces}}
+function clearInputs(){if(!confirm('সব নোটের সংখ্যা ও টার্গেট পরিষ্কার করবেন?'))return;denominations.forEach(v=>document.getElementById('q'+v).value='');document.getElementById('targetAmount').value='';lastSignalWasMatch=false;updateTotal()}
+function getHistory(){try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch{return []}}
+let loadedRecordId=null;function nextSerial(h){const nums=h.map(x=>Number(String(x.serialNo||'').match(/(\d+)$/)?.[1]||0));return 'SC-'+String(Math.max(0,...nums)+1).padStart(4,'0')}function saveCount(){const r=updateTotal();if(r.pieces===0){alert('আগে নোট/কয়েনের সংখ্যা লিখুন।');return}const h=getHistory(),existing=loadedRecordId!==null?h.find(x=>x.id===loadedRecordId):null;const serialNo=existing?.serialNo||nextSerial(h);const targetVal=document.getElementById('targetAmount').value.trim();const customerName=(document.getElementById('customerName')?.value||'').trim();const diff=targetVal===''?null:r.sum-Number(targetVal);const message=(existing?'এই হিসাবটি আপডেট করবেন?':'এই হিসাবটি সেভ করবেন?')+'\n\nSerial No: '+serialNo+'\nCustomer: '+(customerName||'—')+'\nTotal Cash: ৳ '+fmt(r.sum)+(targetVal!==''?'\nExpected: ৳ '+fmt(Number(targetVal))+'\nDifference: '+(diff>0?'বেশি ৳ '+fmt(diff):diff<0?'কম ৳ '+fmt(-diff):'মিলে গেছে'):'');if(!confirm(message))return;const record={id:existing?existing.id:Date.now(),serialNo,name:existing?(existing.name||'Cash Count'):'Cash Count',customerName,savedAt:new Date().toISOString(),total:r.sum,target:targetVal===''?null:Number(targetVal),pieces:r.pieces,counts:r.data};if(existing){const idx=h.findIndex(x=>x.id===existing.id);h[idx]=record;}else h.unshift(record);localStorage.setItem(storageKey,JSON.stringify(h));loadedRecordId=null;renderHistory();alert(existing?'এই হিসাবটি আপডেট হয়েছে—Serial No. অপরিবর্তিত, Duplicate Entry তৈরি হয়নি।':'হিসাব সেভ হয়েছে: '+serialNo)}
+function renderHistory(){const all=getHistory(),el=document.getElementById('history'),q=(document.getElementById('historySearch')?.value||'').trim().toLowerCase(),h=all.filter(item=>!q||String(item.serialNo||'').toLowerCase().includes(q)||String(item.name||'Cash Count').toLowerCase().includes(q)||String(item.customerName||'').toLowerCase().includes(q)||String(item.total).includes(q)||String(item.pieces).includes(q));const total=all.reduce((sum,item)=>sum+(Number(item.total)||0),0);document.getElementById('historyCount').textContent=bn(fmt(all.length));document.getElementById('historyGrandSum').textContent='৳ '+fmt(total);updateDashboard();if(!all.length){el.innerHTML='<div class="empty">এখনও কোনো হিসাব সেভ করা হয়নি</div>';return}if(!h.length){el.innerHTML='<div class="empty">কোনো মিল পাওয়া যায়নি</div>';return}el.innerHTML=h.map(item=>{let date=new Date(item.savedAt).toLocaleString('bn-BD');return `<div class="hist"><strong>${item.serialNo?('🔖 '+item.serialNo+' · '):''}${item.customerName?('👤 '+item.customerName+' · '):''}${item.name||'Cash Count'} · ৳ ${fmt(item.total)} <span class="muted">(${bn(fmt(item.pieces))} টি)</span></strong><div class="muted">${date}${item.target!=null?' · দেওয়ার কথা ৳ '+fmt(item.target)+' · '+(Number(item.total)>Number(item.target)?'বেশি দিয়েছে ৳ '+fmt(Number(item.total)-Number(item.target)):Number(item.total)<Number(item.target)?'কম দিয়েছে ৳ '+fmt(Number(item.target)-Number(item.total)):'সমান দিয়েছে') :''}</div><button class="soft" onclick="loadRecord(${item.id})">এই হিসাব লোড</button> <button class="warn" onclick="deleteRecord(${item.id})">মুছুন</button></div>`}).join('')}
+function loadRecord(id){const item=getHistory().find(x=>x.id===id);if(!item)return;loadedRecordId=item.id;denominations.forEach(v=>document.getElementById('q'+v).value='');item.counts.forEach(x=>{const el=document.getElementById('q'+x.denomination);if(el)el.value=x.count});if(document.getElementById('targetAmount'))document.getElementById('targetAmount').value=item.target==null?'':item.target;if(document.getElementById('customerName'))document.getElementById('customerName').value=item.customerName||'';updateTotal();const status=document.getElementById('autosaveStatus');if(status)status.textContent='Loaded history: save করলে একই entry update হবে, duplicate হবে না';window.scrollTo({top:0,behavior:'smooth'})}
+function deleteRecord(id){if(!confirm('এই হিসাবটি মুছবেন?'))return;localStorage.setItem(storageKey,JSON.stringify(getHistory().filter(x=>x.id!==id)));renderHistory()}
+function clearHistory(){if(!confirm('সব হিস্টোরি মুছে ফেলবেন?'))return;localStorage.removeItem(storageKey);renderHistory()}
+function downloadBackup(){const blob=new Blob([JSON.stringify({app:'SALEHIN CASH COUNT',version:1,history:getHistory()},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cash-counting-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function restoreBackup(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result);if(!Array.isArray(parsed.history))throw new Error();if(!confirm('ব্যাকআপের হিসাবগুলো বর্তমান হিস্টোরির সাথে যোগ করবেন?'))return;const merged=[...parsed.history,...getHistory()];const seen=new Set();const unique=merged.filter(x=>{if(seen.has(x.id))return false;seen.add(x.id);return true});localStorage.setItem(storageKey,JSON.stringify(unique));renderHistory();alert('Restore সম্পন্ন হয়েছে।')}catch{alert('ব্যাকআপ ফাইলটি সঠিক নয়।')}e.target.value=''};reader.readAsText(file)}
+
+function updateConnectionStatus(){const online=navigator.onLine;const dot=document.getElementById('connectionDot'),label=document.getElementById('connectionLabel'),hint=document.getElementById('connectionHint');if(!dot||!label||!hint)return;dot.className='status-dot '+(online?'online':'offline');label.textContent=online?'ONLINE READY':'OFFLINE READY';hint.textContent=online?'Internet detected · Data remains saved locally':'No internet · App works offline';}
+window.addEventListener('online',updateConnectionStatus);window.addEventListener('offline',updateConnectionStatus);updateConnectionStatus();
+
+// SMART 3.0 keyboard workflow: Enter moves through denomination inputs; Ctrl+S saves; Ctrl+P prints.
+document.addEventListener('keydown',function(e){
+ if(e.ctrlKey&&e.key.toLowerCase()==='s'){e.preventDefault();saveCount();return}
+ if(e.ctrlKey&&e.key.toLowerCase()==='p'){e.preventDefault();printReport();return}
+ const active=e.target;const idx=denominations.findIndex(v=>active&&active.id==='q'+v);
+ if(idx!==-1&&e.key==='Enter'){e.preventDefault();const next=e.shiftKey?idx-1:idx+1;if(next>=0&&next<denominations.length){const el=document.getElementById('q'+denominations[next]);el.focus();el.select()}else if(!e.shiftKey){document.getElementById('targetAmount')?.focus()}return}
+});
+localStorage.removeItem('salehin_recent_targets_v1');if(localStorage.getItem('cash_counting_theme')==='dark')document.body.classList.add('dark');if(localStorage.getItem('salehin_compact_v1')==='1')document.body.classList.add('compact');restoreDraft();updateTotal();renderHistory();
+</script>\n<script>
+const bilingualMap={
+'Cash Count Management System':'নগদ গণনা ব্যবস্থাপনা','Checking connection…':'সংযোগ পরীক্ষা হচ্ছে…','Local data saved on this device':'এই ডিভাইসে তথ্য সংরক্ষিত','💵 CURRENT CASH COUNT':'💵 বর্তমান নগদ গণনা','Live counted total':'লাইভ গণনার মোট','🧾 SAVED RECORDS':'🧾 সংরক্ষিত হিসাব','History entries':'হিসাবের ইতিহাস','📚 HISTORY TOTAL':'📚 ইতিহাসের মোট','All saved counts combined':'সব সংরক্ষিত হিসাবের মোট','✍️ Cash Entry':'✍️ নগদ এন্ট্রি','📊 Summary':'📊 সারাংশ','🧾 History':'🧾 ইতিহাস','👤 Customer Name':'👤 গ্রাহকের নাম','কাস্টমারের নাম':'Customer Name','কাস্টমারের নাম লিখুন':'Enter customer name','🎯 টাকার পরিমাণ মিলিয়ে দেখুন':'🎯 Match Amount','Customer-এর দেওয়ার কথা ৳':'Customer Expected Amount ৳','যেমন: ৫০,০০০':'e.g. 50,000','টার্গেট টাকার পরিমাণ লিখুন':'Enter target amount','💵 CASH ENTRY — নোট গণনা':'💵 CASH ENTRY — Note Counting','CASH COUNTED':'CASH COUNTED — মোট গণনা','💾 হিসাব সেভ':'💾 Save Count','📄 PDF / Print':'📄 PDF / Print','🌙 Dark/Light':'🌙 Dark/Light','▤ Compact Mode':'▤ Compact Mode','☀ Screen Awake':'☀ Screen Awake','↻ সব ক্লিয়ার':'↻ Clear All','⬇ ব্যাকআপ':'⬇ Backup','⬆ Restore':'⬆ Restore','হিস্টোরি মুছুন':'Delete History','📊 নোটভিত্তিক সারাংশ':'📊 Note-wise Summary','🧾 গণনার হিস্টোরি':'🧾 Count History','হিস্টোরি খুঁজুন (নাম / টাকার পরিমাণ)':'Search history (name / amount)','মোট হিসাব':'Total Records','History TOTAL SUM':'History Total Sum','এখনো কোনো নোটের সংখ্যা দেওয়া হয়নি':'No note counts entered yet','নোট':'Note','সংখ্যা':'Count','মোট টাকা':'Total Amount','শতাংশ':'Percentage','সর্বমোট':'Grand Total','টি':'pcs','SMART 3.0 · ডেটা এই ডিভাইসের ব্রাউজারে সেভ থাকে · PDF করতে Print থেকে Save as PDF বেছে নিন':'SMART 3.0 · Data is saved in this device browser · To create PDF, choose Save as PDF in Print'
+};
+let uiLang=localStorage.getItem('mm_enterprise_lang')||'bn';
+function applyLanguage(){document.documentElement.lang=uiLang;const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){let t=n.nodeValue.trim();if(!t)continue;if(uiLang==='en'){for(const [bn,en] of Object.entries(bilingualMap)){if(t.includes(bn))t=t.replaceAll(bn,en)}}else{for(const [bn,en] of Object.entries(bilingualMap)){if(t.includes(en))t=t.replaceAll(en,bn)}}n.nodeValue=n.nodeValue.replace(n.nodeValue.trim(),t)}document.querySelectorAll('[placeholder]').forEach(el=>{let val=el.getAttribute('placeholder');if(uiLang==='en'){if(val==='কাস্টমারের নাম লিখুন')el.placeholder='Enter customer name';if(val==='যেমন: ৫০,০০০')el.placeholder='e.g. 50,000';if(val.includes('হিস্টোরি খুঁজুন'))el.placeholder='Search history (name / amount)'}else{if(val==='Enter customer name')el.placeholder='কাস্টমারের নাম লিখুন';if(val==='e.g. 50,000')el.placeholder='যেমন: ৫০,০০০';if(val==='Search history (name / amount)')el.placeholder='হিস্টোরি খুঁজুন (নাম / টাকার পরিমাণ)'}});const b=document.getElementById('langToggle');if(b)b.textContent='🌐 English / বাংলা'}
+function toggleLanguage(){uiLang=uiLang==='bn'?'en':'bn';localStorage.setItem('mm_enterprise_lang',uiLang);applyLanguage()}
+applyLanguage();
+</script>
+
+</body></html>
